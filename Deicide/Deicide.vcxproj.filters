@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header">
+      <UniqueIdentifier>{fb498535-232e-4510-a057-8a3adf8e88e1}</UniqueIdentifier>
+      <Extensions>h;hh;hpp</Extensions>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{52044862-cb27-4914-afd3-b8b2fb0f5b5c}</UniqueIdentifier>
+      <Extensions>c;cc;cpp</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\gf2d_draw.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gf2d_graphics.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gf2d_sprite.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gf2d_text.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gf2d_types.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gf2d_vector.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\simple_logger.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\game.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gf2d_draw.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gf2d_graphics.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gf2d_sprite.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gf2d_vector.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\simple_logger.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
