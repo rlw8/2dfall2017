@@ -26,7 +26,7 @@ int main(int argc, char * argv[])
         720,
         vector4d(0,0,0,255),
         0);
-    gf2d_graphics_set_frame_delay(16);
+    gf2d_graphics_set_frame_delay(15);
     gf2d_sprite_init(1024);
     SDL_ShowCursor(SDL_DISABLE);
     
