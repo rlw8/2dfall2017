@@ -32,7 +32,7 @@
     <ClInclude Include="..\include\simple_logger.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="entity.h">
+    <ClInclude Include="..\include\entity.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

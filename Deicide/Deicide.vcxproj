@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\entity.h" />
     <ClInclude Include="..\include\gf2d_draw.h" />
     <ClInclude Include="..\include\gf2d_graphics.h" />
     <ClInclude Include="..\include\gf2d_sprite.h" />
@@ -18,7 +19,6 @@
     <ClInclude Include="..\include\gf2d_types.h" />
     <ClInclude Include="..\include\gf2d_vector.h" />
     <ClInclude Include="..\include\simple_logger.h" />
-    <ClInclude Include="entity.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\game.c" />

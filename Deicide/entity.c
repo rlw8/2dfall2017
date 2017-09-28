@@ -22,6 +22,7 @@ void entity_system_init(Uint32 maxe)
 	entity_manager.max_entities = maxe;
 	entity_manager.entity_list = (Entity *)malloc(sizeof(Entity)*maxe);
 	memset(entity_manager.entity_list, 0, sizeof(Entity)*maxe);
+	slog("entity system initialized");
 	atexit(entity_system_close);
 }
 
@@ -43,14 +44,16 @@ Entity *entity_new()
 //Check through list, If any entitiy isnt in use, set INUSE to true and give the pointer
 
 void entity_spawn(
-	Sprite sp,
+	Sprite *sp,
 	Vector2D pos,
-	Vector2D vel)
+	Vector2D vel,
+	char *nam)
 {
 	Entity *mon = entity_new();
 	mon->sprite = sp;
 	mon->position = pos;
 	mon->velocity = vel;
+	mon->name = nam;
 }
 
 void entity_delete(Entity *entity)
@@ -66,17 +69,18 @@ void entity_update()
 	int i;
 	for (i = 0; i < entity_manager.max_entities; i++)
 	{
-		if (entity_manager.entity_list[i].in_use == 1 && &entity_manager.entity_list[i].velocity == !NULL)
+		if (entity_manager.entity_list[i].in_use == 1 && &entity_manager.entity_list[i].velocity != (0,0))
 		{
 			entity_manager.entity_list[i].position.x = (entity_manager.entity_list[i].position.x + entity_manager.entity_list[i].velocity.x);
 			entity_manager.entity_list[i].position.y = (entity_manager.entity_list[i].position.y + entity_manager.entity_list[i].velocity.y);
 		}
 	}
+	//Check for collision for damage
 }
 
-void entity_draw(Sprite sprite, Vector2D position) 
+void entity_draw(Sprite *sprite, Vector2D position) 
 {
-	gf2d_sprite_draw_image(&sprite, position);
+	gf2d_sprite_draw_image(sprite, position);
 }
 
 void entity_draw_all()
@@ -89,6 +93,14 @@ void entity_draw_all()
 			entity_draw(entity_manager.entity_list[i].sprite, entity_manager.entity_list[i].position);
 		}
 	}
+}
+
+//kill an entity
+void entity_die(Entity *self)
+{
+	//play death animation, then 
+	slog("has died");
+	entity_delete(self);
 }
 
 void entity_system_close()
