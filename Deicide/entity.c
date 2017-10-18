@@ -26,6 +26,15 @@ void entity_system_init(Uint32 maxe)
 	atexit(entity_system_close);
 }
 
+/*
+Entity *player_init()
+{
+	if (entity_manager.entity_list[0].in_use == 1) return;
+	entity_manager.entity_list[0].in_use = 1;
+	return &entity_manager.entity_list[0];
+}
+*/
+
 Entity *entity_new()
 {
 	int i;
@@ -47,13 +56,16 @@ void entity_spawn(
 	Sprite *sp,
 	Vector2D pos,
 	Vector2D vel,
-	char *nam)
+	char *nam,
+	float spd)
 {
 	Entity *mon = entity_new();
 	mon->sprite = sp;
 	mon->position = pos;
 	mon->velocity = vel;
 	mon->name = nam;
+	mon->speed = spd;
+	mon->grounded = 0;
 }
 
 void entity_delete(Entity *entity)
@@ -99,8 +111,21 @@ void entity_draw_all()
 void entity_die(Entity *self)
 {
 	//play death animation, then 
+	slog(self->name);
 	slog("has died");
 	entity_delete(self);
+}
+
+void entity_die_all()
+{
+	int i;
+	for (i = 0; i < entity_manager.max_entities; i++)
+	{
+		if (entity_manager.entity_list[i].in_use == 1)
+		{
+			entity_die(&entity_manager.entity_list[i]);
+		}
+	}
 }
 
 void entity_system_close()

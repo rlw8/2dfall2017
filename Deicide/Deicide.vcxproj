@@ -19,6 +19,7 @@
     <ClInclude Include="..\include\gf2d_types.h" />
     <ClInclude Include="..\include\gf2d_vector.h" />
     <ClInclude Include="..\include\simple_logger.h" />
+    <ClInclude Include="player.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\game.c" />
@@ -28,6 +29,7 @@
     <ClCompile Include="..\src\gf2d_vector.c" />
     <ClCompile Include="..\src\simple_logger.c" />
     <ClCompile Include="entity.c" />
+    <ClCompile Include="player.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{928C42B5-31CC-401E-9C4A-597C7F08170B}</ProjectGuid>

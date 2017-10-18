@@ -35,6 +35,9 @@
     <ClInclude Include="..\include\entity.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\game.c">
@@ -56,6 +59,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="entity.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="player.c">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
