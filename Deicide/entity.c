@@ -4,6 +4,10 @@
 #include "entity.h"
 #include "simple_logger.h"
 
+Sprite *player_slash;
+SDL_Rect aox = {NULL,NULL, 32, 64};
+int hcol = 0, vcol = 0;
+
 typedef struct
 {
 	Uint32 max_entities;
@@ -57,7 +61,10 @@ void entity_spawn(
 	Vector2D pos,
 	Vector2D vel,
 	char *nam,
-	float spd)
+	float spd,
+	SDL_Rect bx,
+	int hp,
+	int dmg)
 {
 	Entity *mon = entity_new();
 	mon->sprite = sp;
@@ -65,7 +72,14 @@ void entity_spawn(
 	mon->velocity = vel;
 	mon->name = nam;
 	mon->speed = spd;
+	mon->box = bx;
+	mon->box.x = pos.x;
+	mon->box.y = pos.y;
+	mon->health = hp;
+	mon->damage = dmg;
 	mon->grounded = 0;
+	slog("Entity created: %c", nam);
+	
 }
 
 void entity_delete(Entity *entity)
@@ -78,13 +92,23 @@ void entity_delete(Entity *entity)
 
 void entity_update()
 {
-	int i;
-	for (i = 0; i < entity_manager.max_entities; i++)
+	for (int i = 0; i < entity_manager.max_entities; i++)
 	{
-		if (entity_manager.entity_list[i].in_use == 1 && &entity_manager.entity_list[i].velocity != (0,0))
+		if (entity_manager.entity_list[i].in_use <= 0) break;
+		
+		if (entity_manager.entity_list[i].health == 0)  entity_die(&entity_manager.entity_list[i]);
+
+		if (entity_manager.entity_list[i].name == "player attack") entity_manager.entity_list[i].health--;
+
+		if (entity_manager.entity_list[i].name == "enemy")
 		{
-			entity_manager.entity_list[i].position.x = (entity_manager.entity_list[i].position.x + entity_manager.entity_list[i].velocity.x);
-			entity_manager.entity_list[i].position.y = (entity_manager.entity_list[i].position.y + entity_manager.entity_list[i].velocity.y);
+			for (int j = 0; j < entity_manager.max_entities; j++)
+			{
+				if (entity_manager.entity_list[j].name != "player" && entity_manager.entity_list[j].name != "player attack") break;
+				
+				damage(&entity_manager.entity_list[j], &entity_manager.entity_list[i]);
+				
+			}
 		}
 	}
 	//Check for collision for damage
@@ -127,7 +151,6 @@ void entity_die_all()
 		}
 	}
 }
-
 void entity_system_close()
 {
 	int i;
@@ -140,4 +163,130 @@ void entity_system_close()
 	}
 }
 
+void attack(Entity *spawner)
+{
+	if (spawner->name = "player")
+	{
+		if (spawner->velocity.x < 0) entity_spawn(player_slash, vector2d((spawner->position.x - 32), (spawner->position.y + 16)), vector2d(0, 0), "player attack", 1, aox, 20, spawner->damage);
+		else entity_spawn(player_slash, vector2d((spawner->position.x + 32), (spawner->position.y + 16)), vector2d(0, 0), "player attack", 1, aox, NULL, spawner->damage);
+	}
+	else
+	{
+		//entity_spawn;
+	}
+}
+
+void damage(Entity *hitee, Entity *hitter)
+{
+	if (hitee->health != NULL)
+	{
+		hitee->health -= hitter->damage;
+	}
+}
+
+void invuln(Entity *bitch, float time)
+{
+
+}
+
+void entity_collision(Entity *player)
+{
+	
+	for (int i = 1; i < entity_manager.max_entities; i++)
+	{
+		if (entity_manager.entity_list[i].in_use == 0)break;
+
+		hcol = 0, vcol = 0;
+		//slog("checking...");
+
+		if ((player->position.y + player->box.h) < entity_manager.entity_list[i].position.y)
+		{
+			//slog("break 3");
+		}else vcol++;
+
+		if ((player->position.x + player->box.w) < entity_manager.entity_list[i].position.x)
+		{
+			//slog("break 1");
+			//col = 1;
+		}else hcol++;
+		
+		if ((entity_manager.entity_list[i].position.x + entity_manager.entity_list[i].box.w) < player->position.x)
+		{
+			//slog("break 2");
+			//col = 1;
+		}else hcol++;
+		
+		
+		if ((entity_manager.entity_list[i].position.y + entity_manager.entity_list[i].box.h) < player->position.y)
+		{
+			//slog("break 4");
+			//col = 1;
+		}else vcol++;
+		
+
+
+
+		if (vcol <= 1)
+		{
+			player->grounded = 0;
+			slog("found nothing vertically");
+			break;
+		}
+
+		if (hcol <= 1)
+		{
+			slog("found nothing horizontally");
+			break;
+		}
+
+
+		//slog("touched something");
+
+		if (entity_manager.entity_list[i].name == "wall")
+		{
+
+			/*
+			if (((entity_manager.entity_list[i].position.x + entity_manager.entity_list[i].box.w) < (player->position.x + 1) &&
+				entity_manager.entity_list[i].position.y > (player->position.y + player->box.h + 1)) ||
+				(entity_manager.entity_list[i].position.x  > (player->position.x + player->box.w - 1) && 
+				((entity_manager.entity_list[i].position.y > (player->position.y + player->box.h + 1))) )
+				)break;
+
+			if (player->velocity.y > 0)
+			player->velocity.y = 0;
+			*/
+
+			//if ()break;
+
+				
+			//slog("touched wall");
+			//checks against player moving left into a wall
+			if (abs((entity_manager.entity_list[i].position.x + entity_manager.entity_list[i].box.w) - player->position.x) <= 1
+				&& (player->velocity.x < 0)) {	player->velocity.x = 0; player->grounded = 1;}
+
+			//checks if a player is moving right into a wall
+			if (abs((entity_manager.entity_list[i].position.x - (player->position.x + player->box.w)) <= 1)
+				&& (player->velocity.x > 0)) {	player->velocity.x = 0; player->grounded = 1;}
+
+			//checks if a player is moving down into a wall(technically a floor, fuck you)
+			if (abs(entity_manager.entity_list[i].position.y - (player->position.y + player->box.h)) <= 1
+				&& (player->velocity.y > 0))	{player->velocity.y = 0; player->grounded = 1;}
+
+			//checks if a player is moving up into a wall
+			if (abs((entity_manager.entity_list[i].position.y + entity_manager.entity_list[i].box.h) - player->position.y) <= 1
+				&& (player->velocity.y < 0)) player->velocity.y = 0;
+
+				
+		}
+		
+		if (entity_manager.entity_list[i].name == "enemy" || entity_manager.entity_list[i].name == "e_attack")
+		{
+			damage(player, &entity_manager.entity_list[i]);
+		}
+		
+	}
+}
+
 /*eol@eof*/
+
+

@@ -1,3 +1,4 @@
-﻿  player.c
+﻿  game.c
+c:\users\bighe\git\deicide\src\game.c(26): warning C4047: 'initializing': 'int' differs in levels of indirection from 'void *'
   Deicide.vcxproj -> C:\Users\Bighe\git\Deicide\Deicide\\Deicide.exe
   Deicide.vcxproj -> C:\Users\Bighe\git\Deicide\Deicide\\Deicide.pdb (Partial PDB)

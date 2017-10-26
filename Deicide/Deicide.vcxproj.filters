@@ -38,6 +38,9 @@
     <ClInclude Include="player.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="map_data.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\game.c">
@@ -62,6 +65,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="player.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="map_data.c">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

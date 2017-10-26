@@ -19,6 +19,7 @@
     <ClInclude Include="..\include\gf2d_types.h" />
     <ClInclude Include="..\include\gf2d_vector.h" />
     <ClInclude Include="..\include\simple_logger.h" />
+    <ClInclude Include="map_data.h" />
     <ClInclude Include="player.h" />
   </ItemGroup>
   <ItemGroup>
@@ -29,6 +30,7 @@
     <ClCompile Include="..\src\gf2d_vector.c" />
     <ClCompile Include="..\src\simple_logger.c" />
     <ClCompile Include="entity.c" />
+    <ClCompile Include="map_data.c" />
     <ClCompile Include="player.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -79,6 +81,9 @@
       <AdditionalLibraryDirectories>C:\Users\Bighe\git\Deicide\src;C:\Users\Bighe\git\Deicide\include;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
     </Link>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
