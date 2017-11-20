@@ -7,6 +7,7 @@
 #include "player.h"
 #include "gf2d_vector.h"
 #include "map_data.h"
+#include "physfs.h"
 
 #define IMPULSE_LEFT 1
 #define IMPULSE_RIGHT 2
@@ -19,6 +20,7 @@ int main(int argc, char * argv[])
     int done = 0;
 	int impulses = 0;
     const Uint8 * keys;
+	char pbool = 0, pause = 0;
     Sprite *sprite, *sprite_torb, *sprite_player, *sp_brick, *player_slash, *sp_demon, *boss_hand_r, *boss_hand_l, *boss1;
 	SDL_Event event;
 	Entity *player;
@@ -45,6 +47,9 @@ int main(int argc, char * argv[])
     gf2d_graphics_set_frame_delay(15);
     gf2d_sprite_init(1024);
     SDL_ShowCursor(SDL_DISABLE);
+
+	PHYSFS_init(NULL);
+
 
 	//Initialize SDL
 	if (SDL_Init(SDL_INIT_AUDIO) == -1)
@@ -78,7 +83,7 @@ int main(int argc, char * argv[])
 	//entity_spawn(sp_brick, vector2d(164, 350), vector2d(0, 0), "wall", 1, boxx, 1000, NULL);
 	//entity_spawn(sp_brick, vector2d(164, 318), vector2d(0, 0), "wall", 1, boxx, 1000, NULL);
 
-	entity_spawn(sp_demon, vector2d(200, 276), vector2d(0, 0), "enemy", 1, bboxx, 20, 20);
+	entity_spawn(sp_demon, vector2d(200, 276), vector2d(0, 0), "demon", 1, bboxx, 20, 20);
 
 	//entity_spawn(sprite_torb, vector2d(200, 100), vector2d(2,0), "torb");
 
@@ -101,112 +106,133 @@ int main(int argc, char * argv[])
 	
 
     /*main game loop*/
-    while(!done)
-    {
-        SDL_PumpEvents();   // update SDL's internal event structures
-        keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
+	while (!done)
+	{
+		SDL_PumpEvents();   // update SDL's internal event structures
+		keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
 		//impulses = 0;
-		while(SDL_PollEvent(&event));
+		while (SDL_PollEvent(&event));
 		{
 			switch (event.type)
 			{
 			case SDL_KEYUP:
 				switch (event.key.keysym.sym)
 				{
-					case SDLK_RIGHT:
-						impulses &= ~IMPULSE_RIGHT;
-						break;
+				case SDLK_RIGHT:
+					impulses &= ~IMPULSE_RIGHT;
+					break;
 
-					case SDLK_LEFT:
-						impulses &= ~IMPULSE_LEFT;
-						break;
+				case SDLK_LEFT:
+					impulses &= ~IMPULSE_LEFT;
+					break;
 
-						/*
-					case SDLK_SPACE:
-						impulses &= ~IMPULSE_JUMP;
-						break; */
+				case SDLK_ESCAPE:
+					if (pause == 1) pbool = 1;
+
+					if (pause == 0) pbool = 0;
+					break;
+
+					/*
+				case SDLK_SPACE:
+					impulses &= ~IMPULSE_JUMP;
+					break; */
 				}
 				break;
 
 			case SDL_KEYDOWN:
-				
+
 				//if (event.key.repeat)
 					//continue;
 
 				switch (event.key.keysym.sym)
 				{
 
-					case SDLK_LCTRL:
-						slog("attack pressed");
-						impulses |= IMPULSE_ATTACK;
-						break;
+				case SDLK_LCTRL:
+					slog("attack pressed");
+					impulses |= IMPULSE_ATTACK;
+					break;
 
-					case SDLK_RIGHT:
-						impulses |= IMPULSE_RIGHT;
-						//move(player, 1);
-						break;
-		
-					case SDLK_LEFT:
-						impulses |= IMPULSE_LEFT;
-						//move(player, -1);
-						break;
+				case SDLK_RIGHT:
+					impulses |= IMPULSE_RIGHT;
+					//move(player, 1);
+					break;
 
-					case SDLK_SPACE:
-						impulses |= IMPULSE_JUMP;
-						slog("space pressed");
-						break;
+				case SDLK_LEFT:
+					impulses |= IMPULSE_LEFT;
+					//move(player, -1);
+					break;
 
-					case SDLK_UP:
-						impulses |= IMPULSE_JUMP;
-						slog("up pressed");
-						break;
+				case SDLK_SPACE:
+					impulses |= IMPULSE_JUMP;
+					slog("space pressed");
+					break;
 
+				case SDLK_UP:
+					impulses |= IMPULSE_JUMP;
+					slog("up pressed");
+					break;
+
+				case SDLK_ESCAPE:
+					if (pause == 0) pause = 1;
 					
+					if (pbool == 1) pause = 0;
+					break;
+
+
 				}
 			}
 		}
 
-		if (impulses & IMPULSE_LEFT)
-		{
-			if (impulses & IMPULSE_RIGHT)
-			{
+		
 
-			}
-			else 
+		/*update things here*/
+		SDL_GetMouseState(&mx, &my);
+		mf += 0.1;
+		if (mf >= 16.0)mf = 0;
+
+		//entity_update();
+		if (!pause) 
+		{
+			physics(player);
+			entity_collision(player);
+			entity_update();
+
+			if (impulses & IMPULSE_LEFT)
 			{
-				move(player, -1);
+				if (impulses & IMPULSE_RIGHT)
+				{
+
+				}
+				else
+				{
+					move(player, -1);
+				}
+			}
+			else
+			{
+				if (impulses & IMPULSE_RIGHT)
+				{
+					move(player, 1);
+				}
+			}
+
+			if (impulses & IMPULSE_JUMP)
+			{
+				jump(player);
+				impulses &= ~IMPULSE_JUMP;
+			}
+
+			if (impulses & IMPULSE_ATTACK)
+			{
+				attack(player);
+				impulses &= ~IMPULSE_ATTACK;
 			}
 		}
 		else 
 		{
-			if (impulses & IMPULSE_RIGHT)
-			{
-				move(player, 1);
-			}
+			//do pause menu stuff
 		}
 
-		if (impulses & IMPULSE_JUMP) 
-		{
-			jump(player);
-			impulses &= ~IMPULSE_JUMP;
-		}
-
-		if (impulses & IMPULSE_ATTACK)
-		{
-			attack(player);
-			impulses &= ~IMPULSE_ATTACK;
-		}
-
-        /*update things here*/
-        SDL_GetMouseState(&mx,&my);
-        mf+=0.1;
-        if (mf >= 16.0)mf = 0;
-        
-		//entity_update();
-		physics(player);
-		entity_collision(player);
-		entity_update();
-        
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
@@ -219,7 +245,7 @@ int main(int argc, char * argv[])
 			/*
             gf2d_sprite_draw(
                 mouse,
-                vector2d(mx,my),
+                vector2d(mx,my),   
                 NULL,
                 NULL,
                 NULL,
@@ -230,7 +256,7 @@ int main(int argc, char * argv[])
 
         gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
         
-        if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
+        if (keys[SDL_SCANCODE_F4])done = 1; // exit condition
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
     slog("---==== END ====---");

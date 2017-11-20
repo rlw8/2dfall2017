@@ -94,17 +94,22 @@ void entity_update()
 {
 	for (int i = 0; i < entity_manager.max_entities; i++)
 	{
-		if (entity_manager.entity_list[i].in_use <= 0) break;
+		if (entity_manager.entity_list[i].in_use <= 0) continue;
+
+		if (entity_manager.entity_list[i].name == "wall") continue;
 		
 		if (entity_manager.entity_list[i].health == 0)  entity_die(&entity_manager.entity_list[i]);
 
 		if (entity_manager.entity_list[i].name == "player attack") entity_manager.entity_list[i].health--;
 
-		if (entity_manager.entity_list[i].name == "enemy")
+		entity_manager.entity_list[i].box.x = entity_manager.entity_list[i].position.x;
+		entity_manager.entity_list[i].box.y = entity_manager.entity_list[i].position.y;
+
+		if (entity_manager.entity_list[i].name == "demon")
 		{
 			for (int j = 0; j < entity_manager.max_entities; j++)
 			{
-				if (entity_manager.entity_list[j].name != "player" && entity_manager.entity_list[j].name != "player attack") break;
+				if (entity_manager.entity_list[j].name != "player" && entity_manager.entity_list[j].name != "player attack") continue;
 				
 				damage(&entity_manager.entity_list[j], &entity_manager.entity_list[i]);
 				
@@ -134,10 +139,10 @@ void entity_draw_all()
 //kill an entity
 void entity_die(Entity *self)
 {
-	//play death animation, then 
-	slog(self->name);
-	slog("has died");
-	entity_delete(self);
+//play death animation, then 
+slog(self->name);
+slog("has died");
+entity_delete(self);
 }
 
 void entity_die_all()
@@ -165,10 +170,10 @@ void entity_system_close()
 
 void attack(Entity *spawner)
 {
-	if (spawner->name = "player")
+	if (spawner->name == "player")
 	{
-		if (spawner->velocity.x < 0) entity_spawn(player_slash, vector2d((spawner->position.x - 32), (spawner->position.y + 16)), vector2d(0, 0), "player attack", 1, aox, 20, spawner->damage);
-		else entity_spawn(player_slash, vector2d((spawner->position.x + 32), (spawner->position.y + 16)), vector2d(0, 0), "player attack", 1, aox, NULL, spawner->damage);
+		if (spawner->velocity.x < 0) entity_spawn(player_slash, vector2d((spawner->position.x - 32), (spawner->position.y + 16)), vector2d(0, 0), "player attack", 1, aox, 200, spawner->damage);
+		else entity_spawn(player_slash, vector2d((spawner->position.x + 32), (spawner->position.y + 16)), vector2d(0, 0), "player attack", 1, aox, 200, spawner->damage);
 	}
 	else
 	{
@@ -180,6 +185,7 @@ void damage(Entity *hitee, Entity *hitter)
 {
 	if (hitee->health != NULL)
 	{
+		if (hitter->damage == 0)return;
 		hitee->health -= hitter->damage;
 	}
 }
@@ -189,99 +195,100 @@ void invuln(Entity *bitch, float time)
 
 }
 
-void entity_collision(Entity *player)
+void entity_collision()
 {
-	
-	for (int i = 1; i < entity_manager.max_entities; i++)
+
+	for (int i = 0; i < entity_manager.max_entities; i++)
 	{
-		if (entity_manager.entity_list[i].in_use == 0)break;
+		if (entity_manager.entity_list[i].in_use == 0)continue;
+		if (entity_manager.entity_list[i].name == "wall")continue;
 
-		hcol = 0, vcol = 0;
-		//slog("checking...");
-
-		if ((player->position.y + player->box.h) < entity_manager.entity_list[i].position.y)
+		if (entity_manager.entity_list[i].name == "player")
 		{
-			//slog("break 3");
-		}else vcol++;
-
-		if ((player->position.x + player->box.w) < entity_manager.entity_list[i].position.x)
-		{
-			//slog("break 1");
-			//col = 1;
-		}else hcol++;
-		
-		if ((entity_manager.entity_list[i].position.x + entity_manager.entity_list[i].box.w) < player->position.x)
-		{
-			//slog("break 2");
-			//col = 1;
-		}else hcol++;
-		
-		
-		if ((entity_manager.entity_list[i].position.y + entity_manager.entity_list[i].box.h) < player->position.y)
-		{
-			//slog("break 4");
-			//col = 1;
-		}else vcol++;
-		
+			for (int j = 0; j < entity_manager.max_entities; j++)
+			{
+				if (entity_manager.entity_list[j].in_use == 0)continue;
+				if (entity_manager.entity_list[j].name == "player")continue;
 
 
+				//Checking walls for collision
+				if (entity_manager.entity_list[j].name == "wall")
+				{
+					//Checking if the center of the player is within the wall tile below them
+					if ((entity_manager.entity_list[i].box.x + (entity_manager.entity_list[i].box.w / 2) <= (entity_manager.entity_list[j].box.x + entity_manager.entity_list[j].box.w)) &&
+						entity_manager.entity_list[i].box.x + (entity_manager.entity_list[i].box.w / 2) >= entity_manager.entity_list[j].box.x)
+					{
+						//Checking if the player is directly above the tile if the first check passed
+						if (((entity_manager.entity_list[i].box.y + entity_manager.entity_list[i].box.h + 1) >= entity_manager.entity_list[j].box.y) &&
+							entity_manager.entity_list[i].box.y < (entity_manager.entity_list[j].box.y + entity_manager.entity_list[j].box.h))
+						{
+							if (entity_manager.entity_list[i].grounded == 0)
+							{
+								if (entity_manager.entity_list[i].position.y + entity_manager.entity_list[i].box.h >= (entity_manager.entity_list[j].position.y))
+								{
+									entity_manager.entity_list[i].position.y = entity_manager.entity_list[j].position.y - entity_manager.entity_list[i].box.h;
+								}
 
-		if (vcol <= 1)
-		{
-			player->grounded = 0;
-			slog("found nothing vertically");
-			break;
-		}
+								entity_manager.entity_list[i].grounded = 1;
+							}
+						}continue;
+					} //Checking if the center of the player is within the wall tile beside them
+					if ((entity_manager.entity_list[i].box.y + (entity_manager.entity_list[i].box.h / 2) >= (entity_manager.entity_list[j].box.y + entity_manager.entity_list[j].box.h)) &&
+						(entity_manager.entity_list[i].box.y + (entity_manager.entity_list[i].box.h / 2) <= entity_manager.entity_list[j].box.y))
+					{
+						//Check for moving left against a wall
+						if ((entity_manager.entity_list[i].box.x - (entity_manager.entity_list[j].box.x + entity_manager.entity_list[j].box.w)) < 0 &&
+							(entity_manager.entity_list[i].box.x - (entity_manager.entity_list[j].box.x + entity_manager.entity_list[j].box.w)) > entity_manager.entity_list[j].box.w / 2)
+						{
+							entity_manager.entity_list[i].position.x = entity_manager.entity_list[j].box.x + entity_manager.entity_list[j].box.w;
+							continue;
+						}
+					}continue;
+				}
 
-		if (hcol <= 1)
-		{
-			slog("found nothing horizontally");
-			break;
-		}
 
+				if (entity_manager.entity_list[j].name == "demon" || entity_manager.entity_list[j].name == "boss")
+				{
+					if (entity_manager.entity_list[j].box.x > (entity_manager.entity_list[i].box.x + entity_manager.entity_list[i].box.w))continue;
+					if ((entity_manager.entity_list[j].box.x + entity_manager.entity_list[j].box.w) < entity_manager.entity_list[i].box.x)continue;
+					if (entity_manager.entity_list[j].box.y > (entity_manager.entity_list[i].box.y + entity_manager.entity_list[i].box.h))continue;
+					if ((entity_manager.entity_list[j].box.y + entity_manager.entity_list[j].box.h) < entity_manager.entity_list[i].box.y)continue;
 
-		//slog("touched something");
-
-		if (entity_manager.entity_list[i].name == "wall")
-		{
-
-			/*
-			if (((entity_manager.entity_list[i].position.x + entity_manager.entity_list[i].box.w) < (player->position.x + 1) &&
-				entity_manager.entity_list[i].position.y > (player->position.y + player->box.h + 1)) ||
-				(entity_manager.entity_list[i].position.x  > (player->position.x + player->box.w - 1) && 
-				((entity_manager.entity_list[i].position.y > (player->position.y + player->box.h + 1))) )
-				)break;
-
-			if (player->velocity.y > 0)
-			player->velocity.y = 0;
-			*/
-
-			//if ()break;
-
-				
-			//slog("touched wall");
-			//checks against player moving left into a wall
-			if (abs((entity_manager.entity_list[i].position.x + entity_manager.entity_list[i].box.w) - player->position.x) <= 1
-				&& (player->velocity.x < 0)) {	player->velocity.x = 0; player->grounded = 1;}
-
-			//checks if a player is moving right into a wall
-			if (abs((entity_manager.entity_list[i].position.x - (player->position.x + player->box.w)) <= 1)
-				&& (player->velocity.x > 0)) {	player->velocity.x = 0; player->grounded = 1;}
-
-			//checks if a player is moving down into a wall(technically a floor, fuck you)
-			if (abs(entity_manager.entity_list[i].position.y - (player->position.y + player->box.h)) <= 1
-				&& (player->velocity.y > 0))	{player->velocity.y = 0; player->grounded = 1;}
-
-			//checks if a player is moving up into a wall
-			if (abs((entity_manager.entity_list[i].position.y + entity_manager.entity_list[i].box.h) - player->position.y) <= 1
-				&& (player->velocity.y < 0)) player->velocity.y = 0;
-
-				
+					damage(&entity_manager.entity_list[i], &entity_manager.entity_list[j]);
+				}
+			}
 		}
 		
-		if (entity_manager.entity_list[i].name == "enemy" || entity_manager.entity_list[i].name == "e_attack")
+		if (entity_manager.entity_list[i].name == "demon")
 		{
-			damage(player, &entity_manager.entity_list[i]);
+			for (int j = 0; j < entity_manager.max_entities; j++)
+			{
+				if (entity_manager.entity_list[j].in_use == 0)continue;
+				if (&entity_manager.entity_list[j].name == "demon")continue;
+
+				if (entity_manager.entity_list[j].name == "wall")
+				{
+					//Checking if demon is directly above wall tile in question
+					if ((entity_manager.entity_list[i].box.x + (entity_manager.entity_list[i].box.w / 2) <= (entity_manager.entity_list[j].box.x + entity_manager.entity_list[j].box.w)) &&
+						entity_manager.entity_list[i].box.x + (entity_manager.entity_list[i].box.w / 2) >= entity_manager.entity_list[j].box.x)
+					{
+						//Checking if the demon is directly on the wall tile
+						if (((entity_manager.entity_list[i].box.y + entity_manager.entity_list[i].box.h + 1) >= entity_manager.entity_list[j].box.y) &&
+							entity_manager.entity_list[i].box.y < (entity_manager.entity_list[j].box.y + entity_manager.entity_list[j].box.h))
+						{
+							if (entity_manager.entity_list[i].grounded == 0)
+							{
+								if (entity_manager.entity_list[i].position.y + entity_manager.entity_list[i].box.h >= (entity_manager.entity_list[j].position.y))
+								{
+									entity_manager.entity_list[i].position.y = entity_manager.entity_list[j].position.y - entity_manager.entity_list[i].box.h;
+								}
+
+								entity_manager.entity_list[i].grounded = 1;
+							}
+						}
+					}
+				}
+			}
 		}
 		
 	}

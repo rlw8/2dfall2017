@@ -60,25 +60,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)\</OutDir>
-    <IncludePath>C:\Users\Bighe\git\Deicide\include;C:\Users\Bighe\git\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Bighe\git\SDL Files\SDL2-2.0.5\lib\x86;C:\Users\Bighe\git\SDL Files\SDL2_ttf-2.0.14\lib\x86;C:\Users\Bighe\git\SDL Files\SDL2_mixer-2.0.1\lib\x86;C:\Users\Bighe\git\SDL Files\SDL2_image-2.0.1\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\School\2D Game Dev\git\Deicide\include;D:\School\2D Game Dev\git\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\School\2D Game Dev\git\SDL Files\SDL2-2.0.5\lib\x86;D:\School\2D Game Dev\git\SDL Files\SDL2_ttf-2.0.14\lib\x86;D:\School\2D Game Dev\git\SDL Files\SDL2_mixer-2.0.1\lib\x86;D:\School\2D Game Dev\git\SDL Files\SDL2_image-2.0.1\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)\</OutDir>
-    <IncludePath>C:\Users\Bighe\git\Deicide\include;C:\Users\Bighe\git\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Bighe\git\SDL Files\SDL2-2.0.5\lib\x86;C:\Users\Bighe\git\SDL Files\SDL2_ttf-2.0.14\lib\x86;C:\Users\Bighe\git\SDL Files\SDL2_mixer-2.0.1\lib\x86;C:\Users\Bighe\git\SDL Files\SDL2_image-2.0.1\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\School\2D Game Dev\git\Deicide\include;D:\School\2D Game Dev\git\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\School\2D Game Dev\git\SDL Files\SDL2-2.0.5\lib\x86;D:\School\2D Game Dev\git\SDL Files\SDL2_ttf-2.0.14\lib\x86;D:\School\2D Game Dev\git\SDL Files\SDL2_mixer-2.0.1\lib\x86;D:\School\2D Game Dev\git\SDL Files\SDL2_image-2.0.1\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\Bighe\git\Deicide\src;C:\Users\Bighe\git\Deicide\include;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;physfs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\School\2D Game Dev\git\Deicide\src;D:\School\2D Game Dev\git\Deicide\include;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\Bighe\git\Deicide\src;C:\Users\Bighe\git\Deicide\include;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;physfs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\School\2D Game Dev\git\Deicide\src;D:\School\2D Game Dev\git\Deicide\include;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
     </Link>
     <ClCompile>
