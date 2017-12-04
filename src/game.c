@@ -72,7 +72,7 @@ int main(int argc, char * argv[])
 
 	player = entity_new();
 
-	player_spawn(player, sprite_player, vector2d(100, 100), vector2d(4, 0), "player", 1, boxx);
+	player_spawn(player, sprite_player, vector2d(300, 100), vector2d(4, 0), "player", 1, boxx);
 	player->speed = 1;
 
 	
@@ -195,6 +195,7 @@ int main(int argc, char * argv[])
 		{
 			physics(player);
 			entity_collision(player);
+			move_world();
 			entity_update();
 
 			if (impulses & IMPULSE_LEFT)
@@ -261,6 +262,6 @@ int main(int argc, char * argv[])
     }
     slog("---==== END ====---");
 
-    return 0;
+    return 0;	
 }
 /*eol@eof*/

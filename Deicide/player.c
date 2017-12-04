@@ -31,7 +31,8 @@ void player_spawn(
 void move(Entity *player, int neg)
 {
 	player->velocity.x = 4;
-	player->position.x = (player->position.x + ((player->velocity.x * neg)* player->speed));
+	player->velocity.x *= neg;
+	player->position.x = (player->position.x + ((player->velocity.x)* player->speed));
 	//slog("position.x %f",player->position.x );
 	//slog("neg %i", neg);
 	//slog("velocity.x %f", player->velocity.x);

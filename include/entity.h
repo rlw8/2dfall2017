@@ -67,11 +67,14 @@ void entity_die_all();
 void entity_system_close();
 
 //damages first entity by damage of the second
-void damage(Entity *bitch, Entity *fucker);
+void damage(Entity *hitter, Entity *hittee);
 
 //makes something invulnerable for a set time
 void invuln(Entity *thing_that_is_becoming_invulnerable, float time);
 
 //checks if the player is colliding with the other entities
 void entity_collision();
+
+//moves the world based on where the player is located on the screen
+void move_world();
 /*eol@eof*/
