@@ -90,3 +90,20 @@ void set_map(MapData *map, Sprite *sprite)
 		}
 	}
 }
+
+void map_close(MapData *map)
+{
+	/*
+	for (int i = 0; i < 50; i++)
+	{
+		for (int j = 0; j < 30; j++)
+		{
+			map->tiles[j][i] = NULL;
+		}
+	}
+	*/
+	map->height = NULL;
+	map->width = NULL;
+	map->name[12] = "";
+	fclose("mapfile.txt");
+}

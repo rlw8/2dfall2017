@@ -16,8 +16,10 @@ typedef struct Entity_S
 	char grounded;
 	SDL_Rect box;
 
-	Uint32 health;
+	int health;
 	int damage;
+	short facing;
+	short invul;
 
 	/*
 	Add the filling:
@@ -77,4 +79,5 @@ void entity_collision();
 
 //moves the world based on where the player is located on the screen
 void move_world();
+
 /*eol@eof*/

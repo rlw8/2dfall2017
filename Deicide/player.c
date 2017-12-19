@@ -26,8 +26,9 @@ void player_spawn(
 	player->box.y = pos.y;
 	player->health = hp;
 	player->damage = dmg;
+	player->facing = 1;
 }
-
+/*
 void move(Entity *player, int neg)
 {
 	player->velocity.x = 4;
@@ -39,10 +40,10 @@ void move(Entity *player, int neg)
 	//slog("speed %f",player->speed);
 	//slog("moving");
 }
-
+*/
 void jump(Entity *player)
 {
-	slog("jumping");
+	//slog("jumping");
 	if (player->grounded == 1)
 	{
 		player->velocity.y = -3;
@@ -50,19 +51,22 @@ void jump(Entity *player)
 	}
 }
 
+/*
 void drop()
 {
 
 }
 
-void physics(Entity *player)
+void physics(Entity *entity)
 {
-	if (player->grounded == 0)
+	if (entity->grounded == 0)
 	{
-		player->velocity.y += .1;
-		player->position.y = (player->position.y + (player->velocity.y * player->speed));
-	}else player->velocity.y = 0;
+		entity->velocity.y += .1;
+		entity->position.y = (entity->position.y + (entity->velocity.y * entity->speed));
+	}else entity->velocity.y = 0;
 
 	
 }
+*/
 
+/*eol@eof*/

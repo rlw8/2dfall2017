@@ -1,7 +1,7 @@
 ﻿  entity.c
 d:\school\2d game dev\git\deicide\deicide\entity.c(8): warning C4047: 'initializing': 'int' differs in levels of indirection from 'void *'
 d:\school\2d game dev\git\deicide\deicide\entity.c(30): warning C4113: 'void (__cdecl *)()' differs in parameter lists from 'void (__cdecl *)(void)'
-d:\school\2d game dev\git\deicide\deicide\entity.c(186): warning C4047: '!=': 'Uint32' differs in levels of indirection from 'void *'
-d:\school\2d game dev\git\deicide\deicide\entity.c(206): warning C4715: 'find_player': not all control paths return a value
+d:\school\2d game dev\git\deicide\deicide\entity.c(225): warning C4047: '!=': 'int' differs in levels of indirection from 'void *'
+d:\school\2d game dev\git\deicide\deicide\entity.c(247): warning C4715: 'find_player': not all control paths return a value
   Deicide.vcxproj -> D:\School\2D Game Dev\git\Deicide\Deicide\\Deicide.exe
   Deicide.vcxproj -> D:\School\2D Game Dev\git\Deicide\Deicide\\Deicide.pdb (Partial PDB)

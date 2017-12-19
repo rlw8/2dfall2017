@@ -78,6 +78,7 @@ void entity_spawn(
 	mon->health = hp;
 	mon->damage = dmg;
 	mon->grounded = 0;
+	mon->facing = 1;
 	slog("Entity created: %c", nam);
 	
 }
@@ -101,7 +102,11 @@ void entity_update()
 
 		if (entity_manager.entity_list[i].name == "wall") continue;
 		
-		if (entity_manager.entity_list[i].health == 0)  entity_die(&entity_manager.entity_list[i]);
+		if (entity_manager.entity_list[i].health == 0) 
+		{
+			entity_die(&entity_manager.entity_list[i]);
+			continue;
+		}
 
 		if (entity_manager.entity_list[i].name == "player attack") entity_manager.entity_list[i].health--;
 
@@ -117,6 +122,40 @@ void entity_update()
 		}
 	}
 	//Check for collision for damage
+}
+
+void physics(Entity *entity)
+{
+	if (entity->grounded == 0)
+	{
+		entity->velocity.y += .1;
+		entity->position.y = (entity->position.y + (entity->velocity.y * entity->speed));
+	}
+	else entity->velocity.y = 0;
+}
+
+void move(Entity *entity, int neg)
+{
+	int vel;
+	if (entity->name == "player")
+	{
+		entity->velocity.x = 4;
+		entity->velocity.x *= neg;
+
+		if (entity->velocity.x >= 0) entity->facing = 1;
+		else entity->facing = 0;
+
+		entity->position.x = (entity->position.x + ((entity->velocity.x)* entity->speed));
+	}
+	else
+	{
+		vel = entity->velocity.x * neg;
+
+		if (vel >= 0) entity->facing = 1;
+		else entity->facing = 0;
+
+		entity->position.x = (entity->position.x + ((vel)* entity->speed));
+	}
 }
 
 void entity_draw(Sprite *sprite, Vector2D position) 
@@ -140,8 +179,7 @@ void entity_draw_all()
 void entity_die(Entity *self)
 {
 //play death animation, then 
-slog(self->name);
-slog("has died");
+slog("%s has died", self->name);
 entity_delete(self);
 }
 
@@ -170,6 +208,7 @@ void entity_system_close()
 
 void attack(Entity *spawner)
 {
+
 	if (spawner->name == "player")
 	{
 		if (spawner->velocity.x < 0) entity_spawn(player_slash, vector2d((spawner->position.x - 32), (spawner->position.y + 16)), vector2d(0, 0), "player attack", 1, aox, 200, spawner->damage);
@@ -186,7 +225,9 @@ void damage(Entity *hitee, Entity *hitter)
 	if (hitee->health != NULL)
 	{
 		if (hitter->damage == 0)return;
+		if (hitee->invul == 1)return;
 		hitee->health -= hitter->damage;
+		invuln(hitee,2);
 	}
 }
 
@@ -215,11 +256,14 @@ void entity_collision()
 
 		if (entity_manager.entity_list[i].name == "player")
 		{
+			physics(&entity_manager.entity_list[i]);
+
 			for (int j = 0; j < entity_manager.max_entities; j++)
 			{
 				if (entity_manager.entity_list[j].in_use == 0)continue;
 				if (entity_manager.entity_list[j].name == "player")continue;
 
+				
 
 				//Checking walls for collision
 				if (entity_manager.entity_list[j].name == "wall")
@@ -234,6 +278,7 @@ void entity_collision()
 						{
 							if (entity_manager.entity_list[i].grounded == 0)
 							{
+								
 								if (entity_manager.entity_list[i].position.y + entity_manager.entity_list[i].box.h >= (entity_manager.entity_list[j].position.y))
 								{
 									entity_manager.entity_list[i].position.y = entity_manager.entity_list[j].position.y - entity_manager.entity_list[i].box.h;
@@ -241,7 +286,11 @@ void entity_collision()
 
 								entity_manager.entity_list[i].grounded = 1;
 							}
-						}continue;
+						}
+						else {
+							//entity_manager.entity_list[i].grounded = 0;
+							continue;
+						}
 					} //Checking if the center of the player is within the wall tile beside them
 					if ((entity_manager.entity_list[i].box.y + (entity_manager.entity_list[i].box.h / 2) >= (entity_manager.entity_list[j].box.y + entity_manager.entity_list[j].box.h)) &&
 						(entity_manager.entity_list[i].box.y + (entity_manager.entity_list[i].box.h / 2) <= entity_manager.entity_list[j].box.y))
@@ -257,7 +306,7 @@ void entity_collision()
 				}
 
 
-				if (entity_manager.entity_list[j].name == "demon" || entity_manager.entity_list[j].name == "boss")
+				if (entity_manager.entity_list[j].name == "demon" || entity_manager.entity_list[j].name == "boss" || entity_manager.entity_list[j].name == "ghost")
 				{
 					if (entity_manager.entity_list[j].box.x > (entity_manager.entity_list[i].box.x + entity_manager.entity_list[i].box.w))continue;
 					if ((entity_manager.entity_list[j].box.x + entity_manager.entity_list[j].box.w) < entity_manager.entity_list[i].box.x)continue;
@@ -265,12 +314,14 @@ void entity_collision()
 					if ((entity_manager.entity_list[j].box.y + entity_manager.entity_list[j].box.h) < entity_manager.entity_list[i].box.y)continue;
 
 					damage(&entity_manager.entity_list[i], &entity_manager.entity_list[j]);
+					damage(&entity_manager.entity_list[j], &entity_manager.entity_list[i]);
 				}
 			}
 		}
 		
 		if (entity_manager.entity_list[i].name == "demon")
 		{
+			physics(&entity_manager.entity_list[i]);
 			for (int j = 0; j < entity_manager.max_entities; j++)
 			{
 				if (entity_manager.entity_list[j].in_use == 0)continue;
@@ -286,22 +337,57 @@ void entity_collision()
 						if (((entity_manager.entity_list[i].box.y + entity_manager.entity_list[i].box.h + 1) >= entity_manager.entity_list[j].box.y) &&
 							entity_manager.entity_list[i].box.y < (entity_manager.entity_list[j].box.y + entity_manager.entity_list[j].box.h))
 						{
-							if (entity_manager.entity_list[i].grounded == 0)
-							{
-								if (entity_manager.entity_list[i].position.y + entity_manager.entity_list[i].box.h >= (entity_manager.entity_list[j].position.y))
-								{
-									entity_manager.entity_list[i].position.y = entity_manager.entity_list[j].position.y - entity_manager.entity_list[i].box.h;
-								}
+							entity_manager.entity_list[i].grounded = 1;
+						}else
+							entity_manager.entity_list[i].grounded = 0;
+						//physics(&entity_manager.entity_list[i]);
 
-								entity_manager.entity_list[i].grounded = 1;
-							}
+						if (entity_manager.entity_list[i].position.y + entity_manager.entity_list[i].box.h >= (entity_manager.entity_list[j].position.y))
+						{
+							entity_manager.entity_list[i].position.y = entity_manager.entity_list[j].position.y - entity_manager.entity_list[i].box.h;
 						}
 					}
 				}
 
 				if (entity_manager.entity_list[j].name == "player")
 				{
+					if (entity_manager.entity_list[j].position.y - entity_manager.entity_list[i].position.y < 2 || 
+						entity_manager.entity_list[i].position.y - entity_manager.entity_list[j].position.y < 2)
+					{
+						for (int k = 0; k < entity_manager.max_entities; k++)
+						{
+							if (entity_manager.entity_list[k].name != "wall")continue;
 
+							if (entity_manager.entity_list[i].box.x < entity_manager.entity_list[j].box.x)
+							{
+								if (entity_manager.entity_list[k].box.x > entity_manager.entity_list[i].box.x &&
+									entity_manager.entity_list[k].box.x < entity_manager.entity_list[j].box.x)
+								{
+									if (entity_manager.entity_list[k].box.y < entity_manager.entity_list[i].box.y + (entity_manager.entity_list[i].box.h * 1.5) &&
+										entity_manager.entity_list[k].box.y > entity_manager.entity_list[i].box.y - (entity_manager.entity_list[i].box.h / 2))
+										continue;
+								}
+							}
+							else
+							{
+								if (entity_manager.entity_list[k].box.x < entity_manager.entity_list[i].box.x &&
+									entity_manager.entity_list[k].box.x > entity_manager.entity_list[j].box.x)
+								{
+									if (entity_manager.entity_list[k].box.y < entity_manager.entity_list[i].box.y + (entity_manager.entity_list[i].box.h * 1.5) &&
+										entity_manager.entity_list[k].box.y > entity_manager.entity_list[i].box.y - (entity_manager.entity_list[i].box.h / 2))
+										continue;
+								}
+							}
+							//charge
+							entity_manager.entity_list[i].velocity.x = 10;
+							if (entity_manager.entity_list[i].box.x > entity_manager.entity_list[j].box.x)
+								move(&entity_manager.entity_list[i], -1);
+							else
+								move(&entity_manager.entity_list[i], 1);
+
+							entity_manager.entity_list[i].velocity.x = 2;
+						}	
+					}
 				}
 			}
 		}
@@ -326,6 +412,35 @@ void entity_collision()
 			{
 				entity_manager.entity_list[i].position.y++;
 			}
+
+			
+		}
+
+		if (entity_manager.entity_list[i].name == "boss")
+		{
+			//int floating = SDL_GetTicks();
+			//int set = -1;
+			Entity* player = find_player();
+
+			entity_manager.entity_list[i].position.x = player->position.x - 40;
+
+			//entity_manager.entity_list[i].position.y += set;
+			//floating++;
+
+			/*
+			if ((SDL_GetTicks() - floating) > 2000)
+			{
+				floating = SDL_GetTicks();
+				set = set * -1;
+			}
+			*/
+		}
+
+		if (entity_manager.entity_list[i].name == "boss_hand")
+		{
+			Entity* player = find_player();
+
+			
 		}
 	}
 }
@@ -355,6 +470,9 @@ void move_world()
 			}
 		}
 }
+
+
+
 
 /*eol@eof*/
 

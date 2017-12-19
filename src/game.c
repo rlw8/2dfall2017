@@ -21,7 +21,7 @@ int main(int argc, char * argv[])
 	int impulses = 0;
     const Uint8 * keys;
 	char pbool = 0, pause = 0;
-    Sprite *sprite, *sprite_torb, *sprite_player, *sp_brick, *player_slash, *sp_demon, *boss_hand_r, *boss_hand_l, *boss1;
+    Sprite *sprite, *sprite_torb, *sprite_player, *sp_brick, *player_slash, *sp_demon, *boss_hand_r, *boss_hand_l, *boss1, *ghost;
 	SDL_Event event;
 	Entity *player;
 	Mix_Music *music = NULL;
@@ -65,9 +65,10 @@ int main(int argc, char * argv[])
 	sp_brick = gf2d_sprite_load_image("images/Brick1.png");
 	player_slash = gf2d_sprite_load_image("images/player slash.png");
 	sp_demon = gf2d_sprite_load_image("images/demon man.png");
-	boss_hand_r = gf2d_sprite_load_image("images/demonhandr.png");
-	boss_hand_l = gf2d_sprite_load_image("images/demonhandl.png");
+	boss_hand_r = gf2d_sprite_load_image("images/bosshandr.png");
+	boss_hand_l = gf2d_sprite_load_image("images/bosshandl.png");
 	boss1 = gf2d_sprite_load_image("images/hairboss.png");
+	ghost = gf2d_sprite_load_image("images/ghost.png");
 
 
 	player = entity_new();
@@ -76,14 +77,18 @@ int main(int argc, char * argv[])
 	player->speed = 1;
 
 	
-	entity_spawn(boss1, vector2d(400, 200), vector2d(-1,0), "boss", 1, hbox, 100, 30);
+	entity_spawn(boss1, vector2d(400, 200), vector2d(0,0), "boss", 1, hbox, 100, 30);
+
+	entity_spawn(boss_hand_r, vector2d(420, 200), vector2d(0, 0), "boss_hand", 1, boxx, 100, 30);
 
 	//entity_spawn(sp_brick, vector2d(100, 350), vector2d(0, 0), "wall", 1, boxx, 1000, NULL);
 	//entity_spawn(sp_brick, vector2d(132, 350), vector2d(0, 0), "wall", 1, boxx, 1000, NULL);
 	//entity_spawn(sp_brick, vector2d(164, 350), vector2d(0, 0), "wall", 1, boxx, 1000, NULL);
 	//entity_spawn(sp_brick, vector2d(164, 318), vector2d(0, 0), "wall", 1, boxx, 1000, NULL);
 
-	entity_spawn(sp_demon, vector2d(200, 276), vector2d(0, 0), "demon", 1, bboxx, 20, 20);
+	entity_spawn(sp_demon, vector2d(200, 600), vector2d(2,0), "demon", 1, bboxx, 20, 20);
+
+	entity_spawn(ghost, vector2d(600, 300), vector2d(0, 0), "ghost", 1, boxx, 10, 10);
 
 	//entity_spawn(sprite_torb, vector2d(200, 100), vector2d(2,0), "torb");
 
@@ -148,7 +153,7 @@ int main(int argc, char * argv[])
 				{
 
 				case SDLK_LCTRL:
-					slog("attack pressed");
+					//slog("attack pressed");
 					impulses |= IMPULSE_ATTACK;
 					break;
 
@@ -164,12 +169,12 @@ int main(int argc, char * argv[])
 
 				case SDLK_SPACE:
 					impulses |= IMPULSE_JUMP;
-					slog("space pressed");
+					//slog("space pressed");
 					break;
 
 				case SDLK_UP:
 					impulses |= IMPULSE_JUMP;
-					slog("up pressed");
+					//slog("up pressed");
 					break;
 
 				case SDLK_ESCAPE:
@@ -193,8 +198,8 @@ int main(int argc, char * argv[])
 		//entity_update();
 		if (!pause) 
 		{
-			physics(player);
-			entity_collision(player);
+			//physics(player);
+			entity_collision();
 			move_world();
 			entity_update();
 
@@ -219,12 +224,14 @@ int main(int argc, char * argv[])
 
 			if (impulses & IMPULSE_JUMP)
 			{
+				slog("Player jumped");
 				jump(player);
 				impulses &= ~IMPULSE_JUMP;
 			}
 
 			if (impulses & IMPULSE_ATTACK)
 			{
+				slog("Player attacked");
 				attack(player);
 				impulses &= ~IMPULSE_ATTACK;
 			}
@@ -261,6 +268,8 @@ int main(int argc, char * argv[])
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
     slog("---==== END ====---");
+
+	//map_close(castle);
 
     return 0;	
 }
